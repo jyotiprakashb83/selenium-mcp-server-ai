@@ -131,7 +131,6 @@ public class McpServer {
                 currentSession = sessionId;
                 System.out.println("currentSession: "+currentSession);
 
-
                 // Execute commands
                 StringBuilder result = new StringBuilder();
                 boolean passed = true;

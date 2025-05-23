@@ -1,6 +1,6 @@
-**Selenium MCP Server**
+**Selenium MCP Server with AI**
 
-This project implements a Selenium Master Control Program (MCP) server in Java that executes browser automation tasks by converting natural language test steps into Selenium WebDriver commands using a Language Model (LLM). The server supports local Ollama or remote LLM endpoints and is configurable via property files. A TestNG-based client is included to send test prompts and log results.
+This **JAVA MAVEN TESTNG Project** implements a Selenium Master Control Program (MCP) server in Java that executes browser automation tasks by converting natural language test steps into Selenium WebDriver commands using a Language Model (LLM). The server supports local Ollama or remote LLM endpoints and is configurable via property files. A TestNG-based client is included to send test prompts and log results.
 Project Structure
 
 * src/main/java/**McpServer**.java: Main server class that handles HTTP requests, LLM interaction, and Selenium command execution.
@@ -10,16 +10,23 @@ Project Structure
 * **selenium_operations.properties**: Defines supported Selenium operations and their required parameters.
 * **pom.xml**: Maven configuration with dependencies.
 
+**Application Flow**:
+* **Step 1**: Client input natural language test steps to MCP Server
+* **Step 2**: MCP Server processes the input and LLM is called with an augmented PROMPT
+* **Step 3**: LLM Responds with command for MCP 
+* **Step 4**: MCP Server uses the response and perform Selenium commands on browser
+
+
 **Prerequisites**
 
-* Java: 17 or later
-* Maven: 3.6.0 or later
-* WebDriver: ChromeDriver or FirefoxDriver (matching your browser version) installed and added to PATH
-* LLM: Either:
-* Local Ollama running on http://localhost:11434 (default) with a model like llama3
-* A remote LLM endpoint (e.g., OpenAI-compatible API) with an API key
-* Browser: Chrome or Firefox installed
-* TestNG: Included via Maven, no separate installation needed
+* **Java**: 17 or later
+* **Maven**: 3.6.0 or later
+* **WebDriver**: ChromeDriver or FirefoxDriver (matching your browser version) installed and added to PATH
+* **LLM**: Either:
+  * Local Ollama running on http://localhost:11434 (default) with a model like llama3 
+  * A remote LLM endpoint (e.g., OpenAI-compatible API) with an API key
+* **Browser**: Chrome or Firefox installed
+* **TestNG**: Included via Maven, no separate installation needed
 
 **Setup**
 
@@ -54,7 +61,6 @@ Configure the Server:Edit config.properties in the project root to set:
 * llm.model=llama3
 * llm.apiKey=
 
-
 Configure Selenium Operations:The selenium_operations.properties file defines supported Selenium commands and their parameters. It includes operations like start_browser, navigate, click_element, and more. Modify this file to add or change operations if needed.
 Example 
 * selenium_operations.properties:
@@ -62,37 +68,6 @@ Example
 * navigate=url
 * click_element=by,value,timeout
 
-# Sample output from execution
-
-==========llmPrompt============
-
-You are a java testng test automation expert. Convert the following test steps into a JSON array of Selenium commands  each command must have a 'type' from this list: [navigate, start_browser, take_screenshot, find_element, press_key, right_click, close_session, get_element_text, upload_file, hover, drag_and_drop, send_keys, click_element, double_click] and include all required parameters: {navigate=[url], start_browser=[browser, headless], take_screenshot=[outputPath], find_element=[by, value, timeout], press_key=[key], right_click=[by, value, timeout], close_session=[], get_element_text=[by, value, timeout], upload_file=[by, value, filePath, timeout], hover=[by, value, timeout], drag_and_drop=[by, value, targetBy, targetValue, timeout], send_keys=[by, value, text, timeout], click_element=[by, value, timeout], double_click=[by, value, timeout]}. Steps: Navigate to en.wikipedia.org. Search for India. Take a screenshot
-Use following xpaths for values:
-
-* search box //input[@Type='search']
-* search button xpath=//button[contains(@class, 'search')]
-* Note: Respond with only json array of commands not extra characters. Include all commands and keep in order of execution
-* A Sample for response for your reference in order of execution:
-* {"type": "navigate", "url": "https://www.example.com"},
-* {"type": "find_element", "by": "xpath", "value": "//input[@id=\"searchInput\"]", "timeout": "5000"},
-* {"type": "send_keys", "by": "xpath", "value": "//input[@id=\"searchtextbox\"]", "text": "India", "timeout": "5000"},
-* {"type": "click_element", "by": "xpath", "value": "//button[@type=\"submit\"]", "timeout": "5000"}
-
-================================
-
-==========llmResponse============
-* [
-* {"type": "navigate", "url": "https://en.wikipedia.org"},
-* {"type": "find_element", "by": "xpath", "value": "//input[@Type='search']", "timeout": "5000"},
-* {"type": "send_keys", "by": "xpath", "value": "//input[@Type='search']", "text": "India", "timeout": "5000"},
-* {"type": "find_element", "by": "xpath", "value": "//button[contains(@class, 'search')]","timeout": "5000"},
-* {"type": "click_element", "by": "xpath", "value": "//button[contains(@class, 'search')]","timeout": "5000"},
-* {"type": "take_screenshot", "outputPath": "./wikipedia_search.png"}
-* ]
-================================
-
-After test steps are executed a **screenshot** in folder will be saved as we have **take_screenshot** step.
-  
 # ... (other operations)
 
 **Set Up Ollama (if using local LLM)**:
