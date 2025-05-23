@@ -103,7 +103,7 @@ The client sends a sample test prompt (e.g., navigating to https://example.com, 
 View Test Results:TestNG generates reports in the test-output/ directory (HTML and XML formats) with pass/fail status and details.
 Example test steps in SeleniumTestClient.java:
 
-String testSteps = `"Start a chrome browser, navigate to https://example.com, click the link with xpath //a[text()='More information'], get the text of xpath //body."`;
+Input natural language test steps = "Navigate to en.wikipedia.org. Search for India. Take a screenshot";
 
 **Example LLM Output**
 The LLM must convert test steps into a JSON array of commands matching the operations in selenium_operations.properties. Example:
