@@ -1,7 +1,8 @@
 **Selenium MCP Server with AI**
 
 This **JAVA MAVEN TESTNG Project** implements a Selenium Master Control Program (MCP) server in Java that executes browser automation tasks by converting natural language test steps into Selenium WebDriver commands using a Language Model (LLM). The server supports local Ollama or remote LLM endpoints and is configurable via property files. A TestNG-based client is included to send test prompts and log results.
-Project Structure
+
+**Project Structure**
 
 * src/main/java/**McpServer**.java: Main server class that handles HTTP requests, LLM interaction, and Selenium command execution.
 * src/main/java/**LlmClient**.java: Handles communication with the LLM (Ollama or remote API).
@@ -33,7 +34,6 @@ Project Structure
 * Clone the Project:
 * git clone <repository-url>
 * cd selenium-mcp
-
 
 Install Dependencies:Run the following command to download dependencies:
 mvn install
