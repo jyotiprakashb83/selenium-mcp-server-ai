@@ -14,7 +14,7 @@ public class SeleniumTestClient {
 
     @Test
     public void testWebNavigation() throws Exception {
-        String testSteps = "Navigate to qa.coach.com?auto=true. Search for shoes. Take a screenshot";
+        String testSteps = "Navigate to en.wikipedia.org. Search for India. Take a screenshot";
         String response = sendTestSteps(testSteps);
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> result = mapper.readValue(response, Map.class);
@@ -22,8 +22,16 @@ public class SeleniumTestClient {
     }
 
     private String sendTestSteps(String steps) throws Exception {
+        String testXpaths = "\nsearch box //input[@Type='search']" +
+                "\nsearch button xpath=//button[contains(@class, 'search')]";
+
         HttpPost post = new HttpPost(serverUrl);
-        String requestBody = new ObjectMapper().writeValueAsString(Map.of("steps", steps));
+        String requestBody = new ObjectMapper().writeValueAsString(
+                Map.of(
+                        "steps", steps,
+                        "xpaths", testXpaths
+                )
+        );
         post.setEntity(new StringEntity(requestBody, StandardCharsets.UTF_8));
         post.setHeader("Content-Type", "application/json");
 

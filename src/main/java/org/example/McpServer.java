@@ -100,9 +100,7 @@ public class McpServer {
                 ObjectMapper mapper = new ObjectMapper();
                 Map<String, String> request = mapper.readValue(requestBody, Map.class);
                 String testSteps = request.get("steps");
-
-                String testXpaths = "\nsearch box xpath=//*[@data-qa='cm_inp_field_search']" +
-                        "\nsearch button xpath=//*[@data-qa='cm_icon_search']";
+                String testXpaths = request.get("xpaths");
 
                 // Query LLM to convert steps to Selenium commands
                 String llmPrompt = "You are a java testng test automation expert. Convert the following test steps into a JSON array of Selenium commands " +
@@ -111,10 +109,10 @@ public class McpServer {
                         "\nUse following xpaths for values:"+ testXpaths +
                         "\nNote: Respond with only json array of commands not extra characters. Include all commands and keep in order of execution" +
                         "\nA Sample for response for your reference in order of execution:\n"+
-                        "  {\"type\": \"navigate\", \"url\": \"http://qa.coach.com/?auto=true\"},\n" +
-                        "  {\"type\": \"find_element\", \"by\": \"xpath\", \"value\": \"//input[@id=\\\"searchtextbox\\\"]\", \"timeout\": \"5000\"},\n" +
-                        "  {\"type\": \"send_keys\", \"by\": \"xpath\", \"value\": \"//input[@id=\\\"searchtextbox\\\"]\", \"text\": \"shoes\", \"timeout\": \"5000\"},\n" +
-                        "  {\"type\": \"click_element\", \"by\": \"xpath\", \"value\": \"//input[@id=\\\"textbox\\\"]\", \"timeout\": \"5000\"}";
+                        "  {\"type\": \"navigate\", \"url\": \"https://www.example.com\"},\n" +
+                        "  {\"type\": \"find_element\", \"by\": \"xpath\", \"value\": \"//input[@id=\\\"searchInput\\\"]\", \"timeout\": \"5000\"},\n" +
+                        "  {\"type\": \"send_keys\", \"by\": \"xpath\", \"value\": \"//input[@id=\\\"searchtextbox\\\"]\", \"text\": \"India\", \"timeout\": \"5000\"},\n" +
+                        "  {\"type\": \"click_element\", \"by\": \"xpath\", \"value\": \"//button[@type=\\\"submit\\\"]\", \"timeout\": \"5000\"}";
                 System.out.println("==========llmPrompt============");
                 System.out.println(llmPrompt);
                 System.out.println("================================");

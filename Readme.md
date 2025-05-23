@@ -56,11 +56,43 @@ Configure the Server:Edit config.properties in the project root to set:
 
 
 Configure Selenium Operations:The selenium_operations.properties file defines supported Selenium commands and their parameters. It includes operations like start_browser, navigate, click_element, and more. Modify this file to add or change operations if needed.
-Example selenium_operations.properties:
-start_browser=browser,headless
-navigate=url
-click_element=by,value,timeout
+Example 
+* selenium_operations.properties:
+* start_browser=browser,headless
+* navigate=url
+* click_element=by,value,timeout
 
+# Sample output from execution
+
+==========llmPrompt============
+
+You are a java testng test automation expert. Convert the following test steps into a JSON array of Selenium commands  each command must have a 'type' from this list: [navigate, start_browser, take_screenshot, find_element, press_key, right_click, close_session, get_element_text, upload_file, hover, drag_and_drop, send_keys, click_element, double_click] and include all required parameters: {navigate=[url], start_browser=[browser, headless], take_screenshot=[outputPath], find_element=[by, value, timeout], press_key=[key], right_click=[by, value, timeout], close_session=[], get_element_text=[by, value, timeout], upload_file=[by, value, filePath, timeout], hover=[by, value, timeout], drag_and_drop=[by, value, targetBy, targetValue, timeout], send_keys=[by, value, text, timeout], click_element=[by, value, timeout], double_click=[by, value, timeout]}. Steps: Navigate to en.wikipedia.org. Search for India. Take a screenshot
+Use following xpaths for values:
+
+* search box //input[@Type='search']
+* search button xpath=//button[contains(@class, 'search')]
+* Note: Respond with only json array of commands not extra characters. Include all commands and keep in order of execution
+* A Sample for response for your reference in order of execution:
+* {"type": "navigate", "url": "https://www.example.com"},
+* {"type": "find_element", "by": "xpath", "value": "//input[@id=\"searchInput\"]", "timeout": "5000"},
+* {"type": "send_keys", "by": "xpath", "value": "//input[@id=\"searchtextbox\"]", "text": "India", "timeout": "5000"},
+* {"type": "click_element", "by": "xpath", "value": "//button[@type=\"submit\"]", "timeout": "5000"}
+
+================================
+
+==========llmResponse============
+* [
+* {"type": "navigate", "url": "https://en.wikipedia.org"},
+* {"type": "find_element", "by": "xpath", "value": "//input[@Type='search']", "timeout": "5000"},
+* {"type": "send_keys", "by": "xpath", "value": "//input[@Type='search']", "text": "India", "timeout": "5000"},
+* {"type": "find_element", "by": "xpath", "value": "//button[contains(@class, 'search')]","timeout": "5000"},
+* {"type": "click_element", "by": "xpath", "value": "//button[contains(@class, 'search')]","timeout": "5000"},
+* {"type": "take_screenshot", "outputPath": "./wikipedia_search.png"}
+* ]
+================================
+
+After test steps are executed a **screenshot** in folder will be saved as we have **take_screenshot** step.
+  
 # ... (other operations)
 
 **Set Up Ollama (if using local LLM)**:
