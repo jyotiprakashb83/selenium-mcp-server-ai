@@ -14,7 +14,7 @@ This **JAVA MAVEN TESTNG Project** implements a Selenium Master Control Program 
 **Application Flow**:
 * **Step 1**: Client input natural language test steps to MCP Server
 * **Step 2**: MCP Server processes the input and LLM is called with an augmented PROMPT
-* **Step 3**: LLM Responds with command for MCP 
+* **Step 3**: LLM Responds with command for MCP
 * **Step 4**: MCP Server uses the response and perform Selenium commands on browser
 
 
@@ -24,26 +24,20 @@ This **JAVA MAVEN TESTNG Project** implements a Selenium Master Control Program 
 * **Maven**: 3.6.0 or later
 * **WebDriver**: ChromeDriver or FirefoxDriver (matching your browser version) installed and added to PATH
 * **LLM**: Either:
-  * Local Ollama running on http://localhost:11434 (default) with a model like llama3 
+  * Local Ollama running on http://localhost:11434 (default) with a model like llama3
   * A remote LLM endpoint (e.g., OpenAI-compatible API) with an API key
 * **Browser**: Chrome or Firefox installed
 * **TestNG**: Included via Maven, no separate installation needed
 
 **Setup**
 
+STEP 1:
 * Clone the Project:
 * git clone <repository-url>
 * cd selenium-mcp
 
 Install Dependencies:Run the following command to download dependencies:
 mvn install
-
-
-**Configure WebDriver:**
-
-Download ChromeDriver (for Chrome) or GeckoDriver (for Firefox) from their respective websites.
-Ensure the driver is in your system PATH or specify its location in config.properties if needed.
-
 
 Configure the Server:Edit config.properties in the project root to set:
 
@@ -53,7 +47,6 @@ Configure the Server:Edit config.properties in the project root to set:
 * **llm.model**: LLM model name (default: llama3)
 * **llm.apiKey**: API key for remote LLM (leave empty for Ollama)
 
-
 **Sample config.properties:**
 * server.port=8080
 * browser=chrome
@@ -61,8 +54,12 @@ Configure the Server:Edit config.properties in the project root to set:
 * llm.model=llama3
 * llm.apiKey=
 
-Configure Selenium Operations:The selenium_operations.properties file defines supported Selenium commands and their parameters. It includes operations like start_browser, navigate, click_element, and more. Modify this file to add or change operations if needed.
-Example 
+STEP 2:
+* start server using **McpServer**.java
+* Run selenium client file to see test execution **SeleniumTestClient**.java
+
+**Configure Selenium Operations**:The selenium_operations.properties file defines supported Selenium commands and their parameters. It includes operations like start_browser, navigate, click_element, and more. Modify this file to add or change operations if needed.
+Example
 * selenium_operations.properties:
 * start_browser=browser,headless
 * navigate=url
