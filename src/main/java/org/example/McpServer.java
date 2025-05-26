@@ -178,7 +178,7 @@ public class McpServer {
     private String executeCommand(Map<String, String> cmd) {
         String type = cmd.get("type");
         long timeoutMs = cmd.containsKey("timeout") ? Long.parseLong(cmd.get("timeout")) : 10000;
-        System.out.println("Executing cmd: "+cmd);
+        System.out.println("MCP Executing cmd: "+cmd);
         switch (type.toLowerCase()) {
 //            case "start_browser":
 //                String sessionId = cmd.get("browser") + "_" + System.currentTimeMillis();
