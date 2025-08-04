@@ -30,6 +30,7 @@ public class McpServer {
         this.port = Integer.parseInt(config.getProperty("server.port", "8080"));
         String llmEndpoint = config.getProperty("llm.endpoint", "http://localhost:11434");
         String llmModel = config.getProperty("llm.model", "gemma2:9b");
+        //String llmModel = config.getProperty("llm.model", "llama3.2:3b");
         String llmApiKey = config.getProperty("llm.apiKey", "");
         this.llmClient = new LlmClient(llmEndpoint, llmModel, llmApiKey);
         this.supportedOperations = loadOperations(operationsPath);
@@ -83,9 +84,84 @@ public class McpServer {
             case "name" -> By.name(value);
             case "tag" -> By.tagName(value);
             case "class" -> By.className(value);
+            case "text" ->By.linkText(value);
             default -> throw new IllegalArgumentException("Unsupported locator strategy: " + by);
         };
     }
+
+//    public void start() throws IOException {
+//        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+//        server.createContext("/execute", exchange -> {
+//            if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+//                sendResponse(exchange, 405, "{\"error\": \"Method not allowed\"}");
+//                return;
+//            }
+//
+//            try {
+//                String requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+//                ObjectMapper mapper = new ObjectMapper();
+//                Map<String, String> request = mapper.readValue(requestBody, Map.class);
+//                String testSteps = request.get("steps");
+//                String testXpaths = request.get("xpaths");
+//
+//                // Query LLM to convert steps to Selenium commands
+//                String llmPrompt = "You are a java testng test automation expert. Convert the following test steps into a JSON array of Selenium commands " +
+//                        " each command must have a 'type' from this list: " + supportedOperations.keySet() +
+//                        " and include all required parameters: " + supportedOperations + ". Steps: " + testSteps +
+//                        "\nUse following xpaths for values:"+ testXpaths +
+//                        "\nNote: Respond with only json array of commands not extra characters. Include all commands and keep in order of execution" +
+//                        "\nA Sample for response for your reference in order of execution:\n"+
+//                        "  {\"type\": \"navigate\", \"url\": \"https://www.example.com\"},\n" +
+//                        "  {\"type\": \"find_element\", \"by\": \"xpath\", \"value\": \"//input[@id=\\\"searchInput\\\"]\", \"timeout\": \"5000\"},\n" +
+//                        "  {\"type\": \"send_keys\", \"by\": \"xpath\", \"value\": \"//input[@id=\\\"searchtextbox\\\"]\", \"text\": \"India\", \"timeout\": \"5000\"},\n" +
+//                        "  {\"type\": \"click_element\", \"by\": \"xpath\", \"value\": \"//button[@type=\\\"submit\\\"]\", \"timeout\": \"5000\"}";
+//                System.out.println("==========llmPrompt============");
+//                System.out.println(llmPrompt);
+//                System.out.println("================================");
+//
+//                String llmResponse = llmClient.queryLlm(llmPrompt);
+//                llmResponse = llmResponse.replace("```","");
+//
+//                System.out.println("==========llmResponse============");
+//                System.out.println(llmResponse);
+//                System.out.println("================================");
+//                List<Map<String, String>> commands = mapper.readValue(llmResponse, List.class);
+//
+//                String sessionId = "chrome_" + System.currentTimeMillis();
+//                WebDriver driver = initializeDriver("chrome", "headless");
+//                drivers.put(sessionId, driver);
+//                currentSession = sessionId;
+//                System.out.println("currentSession: "+currentSession);
+//
+//                // Execute commands
+//                StringBuilder result = new StringBuilder();
+//                boolean passed = true;
+//                for (Map<String, String> cmd : commands) {
+//                    Thread.sleep(5000);
+//                    try {
+//                        validateCommand(cmd);
+//                        String commandResult = executeCommand(cmd);
+//                        result.append("Command ").append(cmd.get("type")).append(": ").append(commandResult).append("\n");
+//                    } catch (Exception e) {
+//                        passed = false;
+//                        result.append("Command ").append(cmd.get("type")).append(" failed: ").append(e.getMessage()).append("\n");
+//                    }
+//                }
+//
+//                // Send response
+//                String response = mapper.writeValueAsString(Map.of("passed", passed, "details", result.toString()));
+//                sendResponse(exchange, 200, response);
+//                driver.close();
+//                driver.quit();
+//            } catch (Exception e) {
+//                sendResponse(exchange, 500, "{\"error\": \"" + e.getMessage() + "\"}");
+//            }
+//        });
+//
+//        server.setExecutor(null);
+//        server.start();
+//        System.out.println("MCP Server started on port " + port);
+//    }
 
     public void start() throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
@@ -100,15 +176,17 @@ public class McpServer {
                 ObjectMapper mapper = new ObjectMapper();
                 Map<String, String> request = mapper.readValue(requestBody, Map.class);
                 String testSteps = request.get("steps");
-                String testXpaths = request.get("xpaths");
+                String dom = request.get("dom");
 
                 // Query LLM to convert steps to Selenium commands
-                String llmPrompt = "You are a java testng test automation expert. Convert the following test steps into a JSON array of Selenium commands " +
+                String llmPrompt = "You are a java selenium testng test automation expert. Convert the following test steps into a JSON array of Selenium commands. " +
                         " each command must have a 'type' from this list: " + supportedOperations.keySet() +
-                        " and include all required parameters: " + supportedOperations + ". Steps: " + testSteps +
-                        "\nUse following xpaths for values:"+ testXpaths +
-                        "\nNote: Respond with only json array of commands not extra characters. Include all commands and keep in order of execution" +
-                        "\nA Sample for response for your reference in order of execution:\n"+
+                        " and include all required parameters: " + supportedOperations + ". Following are the Steps: " + testSteps +
+                        " \nUse following dom json of interactable web elements with there attributes:"+ dom +
+                        "\nNote: " +
+                        "1. Respond only in json array of commands having type, xpath value and other attributes as per not extra characters." +
+                        "2. Commands to be in order of execution. Like First command to navigate url and then follow as per user interactions needed." +
+                        "\nFollowing is a Sample response for your reference in order of execution:\n"+
                         "  {\"type\": \"navigate\", \"url\": \"https://www.example.com\"},\n" +
                         "  {\"type\": \"find_element\", \"by\": \"xpath\", \"value\": \"//input[@id=\\\"searchInput\\\"]\", \"timeout\": \"5000\"},\n" +
                         "  {\"type\": \"send_keys\", \"by\": \"xpath\", \"value\": \"//input[@id=\\\"searchtextbox\\\"]\", \"text\": \"India\", \"timeout\": \"5000\"},\n" +
@@ -119,6 +197,7 @@ public class McpServer {
 
                 String llmResponse = llmClient.queryLlm(llmPrompt);
                 llmResponse = llmResponse.replace("```","");
+                llmResponse = llmResponse.replace("json","");
 
                 System.out.println("==========llmResponse============");
                 System.out.println(llmResponse);
